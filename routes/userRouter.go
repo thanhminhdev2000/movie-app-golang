@@ -3,13 +3,18 @@ package routes
 import (
 	"database/sql"
 	"movie-app-golang/controllers"
+	"movie-app-golang/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserRoutes(incomingRoutes *gin.Engine, db *sql.DB) {
-	incomingRoutes.GET("/users", controllers.GetUsers(db))
-	incomingRoutes.GET("/users/:user_id", controllers.GetUser(db))
-	incomingRoutes.POST("/users/signup", controllers.SignUp(db))
-	incomingRoutes.POST("/users/login", controllers.Login(db))
+	userGroup := incomingRoutes.Group("/users")
+	{
+		userGroup.GET("/", middleware.AuthMiddleware(), controllers.GetUsers(db))
+		userGroup.GET("/:user_id", middleware.AuthMiddleware(), controllers.GetUser(db))
+		userGroup.POST("/signup", controllers.SignUp(db))
+		userGroup.POST("/login", controllers.Login(db))
+	}
+
 }

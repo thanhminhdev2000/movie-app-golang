@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"movie-app-golang/models"
+	"movie-app-golang/utils"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -99,8 +100,9 @@ func Login(db *sql.DB) gin.HandlerFunc {
 		}
 
 		var storedPassword string
-		query := "SELECT password FROM users WHERE username = ?"
-		err := db.QueryRow(query, userLogin.Username).Scan(&storedPassword)
+		var userID int
+		query := "SELECT id, password FROM users WHERE username = ?"
+		err := db.QueryRow(query, userLogin.Username).Scan(&userID, &storedPassword)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
@@ -115,6 +117,12 @@ func Login(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+		token, err := utils.CreateJWT(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token})
 	}
 }
