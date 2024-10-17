@@ -1,8 +1,8 @@
 package models
 
 type UserSignUp struct {
-	Email    string `json:"email"`
 	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -13,6 +13,12 @@ type UserLogin struct {
 
 type UserDetail struct {
 	ID       int    `json:"id"`
-	Email    string `json:"email"`
 	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type LoginResponse struct {
+	Message     string     `json:"message"`
+	User        UserDetail `json:"user"`
+	AccessToken string     `json:"accessToken"`
 }

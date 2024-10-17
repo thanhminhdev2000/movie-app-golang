@@ -4,18 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 func ConnectMySQL() (*sql.DB, error) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	dsn := "user:user_password@tcp(127.0.0.1:3306)/movie-app"
+	dsn := os.Getenv("MYSQL_DSN")
 	if dsn == "" {
 		log.Fatalf("MYSQL_DSN not set in environment")
 	}

@@ -1,19 +1,20 @@
 package utils
 
 import (
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("1ec1a35b833fd1d9edc3ded5ae6a969fb00a9cef8bab95cb6ca89ed0eda55131")
-
-func CreateJWT(userID int) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+func CreateToken(userID int, expirationTime time.Duration) (string, error) {
+	expiration := time.Now().Add(expirationTime)
+	var jwtKey = []byte(os.Getenv("JWT_KEY"))
 
 	claims := &jwt.RegisteredClaims{
-		Subject:   string(rune(userID)),
-		ExpiresAt: jwt.NewNumericDate(expirationTime),
+		Subject:   strconv.Itoa(userID),
+		ExpiresAt: jwt.NewNumericDate(expiration),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -22,4 +23,12 @@ func CreateJWT(userID int) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func CreateAccessToken(userID int) (string, error) {
+	return CreateToken(userID, 2*time.Minute)
+}
+
+func CreateRefreshToken(userID int) (string, error) {
+	return CreateToken(userID, 7*24*time.Hour)
 }

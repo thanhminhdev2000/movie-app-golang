@@ -13,8 +13,11 @@ func UserRoutes(incomingRoutes *gin.Engine, db *sql.DB) {
 	{
 		userGroup.GET("/", middleware.AuthMiddleware(), controllers.GetUsers(db))
 		userGroup.GET("/:user_id", middleware.AuthMiddleware(), controllers.GetUser(db))
+		userGroup.GET("/profile", middleware.AuthMiddleware(), controllers.GetMyProfile(db))
 		userGroup.POST("/signup", controllers.SignUp(db))
 		userGroup.POST("/login", controllers.Login(db))
+		userGroup.POST("/refresh", controllers.RefreshToken())
+		userGroup.POST("/logout", controllers.Logout())
 	}
 
 }

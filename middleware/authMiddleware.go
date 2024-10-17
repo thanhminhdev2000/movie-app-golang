@@ -2,16 +2,17 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("1ec1a35b833fd1d9edc3ded5ae6a969fb00a9cef8bab95cb6ca89ed0eda55131")
-
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var jwtKey = []byte(os.Getenv("JWT_KEY"))
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
